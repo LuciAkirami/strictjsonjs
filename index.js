@@ -32,7 +32,7 @@ function wrapWithAngleBrackets(outputFormat, delimiter, delimiter_num) {
   return outputDict;
 }
 
-function strictJson(
+async function strictJson(
   systemPrompt,
   userPrompt,
   outputFormat,
@@ -52,12 +52,13 @@ Ensure the following output keys are present in the json: ${Object.keys(
     newOutputFormat
   ).join(" ")}`;
 
-  console.table(newOutputFormat);
-  console.log(outputFormatPrompt);
+  systemPrompt = String(systemPrompt) + outputFormatPrompt + errorMessage
+  userPrompt = String(userPrompt)
+
+  let response = await llm(systemPrompt, userPrompt)
+  
+  return response
 }
 
-strictJson("You are a helpful Assistant", "It is a beautiful and sunny day", {
-  Sentiment: "Type of Sentiment",
-  Adjectives: "Array of adjectives",
-  Words: "Number of words",
-});
+// Export the strictJson function
+export { strictJson };
