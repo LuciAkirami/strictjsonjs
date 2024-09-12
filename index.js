@@ -45,19 +45,37 @@ async function strictJson(
 
   // using JSON.stringify(newOutputFormat) instead just newOutputFormat as keeping the
   // later will output [object Object]
-  let outputFormatPrompt = `\nOutput in the following json template: \`\`\`${JSON.stringify(newOutputFormat)}\`\`\`
+  let outputFormatPrompt = `\nOutput in the following json template: \`\`\`${JSON.stringify(
+    newOutputFormat
+  )}\`\`\`
 Update values enclosed in <> and remove the <>. 
 Your response must only be the updated json template beginning with {{ and ending with }}
 Ensure the following output keys are present in the json: ${Object.keys(
     newOutputFormat
   ).join(" ")}`;
 
-  systemPrompt = String(systemPrompt) + outputFormatPrompt + errorMessage
-  userPrompt = String(userPrompt)
+  systemPrompt = String(systemPrompt) + outputFormatPrompt + errorMessage;
+  userPrompt = String(userPrompt);
 
-  let response = await llm(systemPrompt, userPrompt)
-  
-  return response
+  let response = await llm(systemPrompt, userPrompt);
+
+  // Get the Context present between the opening and closing brackets
+  // Add the { and } if the LLM does not generate them
+  let startIdx = response.indexOf("{");
+  if (startIdx === -1) {
+    startIdx = 0;
+    response = "{" + response;
+  }
+
+  let endIdx = response.lastIndexOf("}");
+  if (endIdx === -1) {
+    response = response + "}";
+    endIdx = response.length + 1;
+  }
+
+  response = response.substring(startIdx, endIdx + 1);
+
+  return response;
 }
 
 // Export the strictJson function
