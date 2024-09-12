@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A framework that helps LLMs output in strict JSON format",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/LuciAkirami/strictjsonjs/issues"
   },
-  "homepage": "https://github.com/LuciAkirami/strictjsonjs#readme"
+  "homepage": "https://github.com/LuciAkirami/strictjsonjs#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.19.0",
+    "dotenv": "^16.4.5"
+  }
 }
