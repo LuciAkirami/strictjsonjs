@@ -32,13 +32,63 @@ function wrapWithAngleBrackets(outputFormat, delimiter, delimiter_num) {
   return outputDict;
 }
 
-function check_key(
-  res,
+function convertToObject(
+  field,
+  keys,
+  delimiter
+) {
+  let outputD = {}
+  for (const idx in keys) {
+    let key = keys[idx]
+    if (!field.includes(`'${delimiter}${key}${delimiter}':`) && !field.includes(`"${delimiter}${key}${delimiter}":`)) {
+      // ----- Yet to Do ------
+      // try to fix the output if possible
+      // Cases with no delimiter buyt with key and/or incomplete quotations
+
+      // Cases with delimiter but with incomplete quotations
+    }
+
+  }
+  
+  // if everything is good, we extract out the fields
+  // Using RegEx to extract keys and values
+  
+}
+
+// let a = ['Sam','Pam']
+// const person = {fname:"John", lname:"Doe", age:25};
+// let keys = Object.keys(person)
+// convertToObject('',keys,'')
+
+let field = '{"###Sentiment###":"Positive","###Adjectives###":["beautiful","sunny"],"###Words###":"5"}'
+let myObj = {
+  Sentiment: "Type of Sentiment",
+  Adjectives: "Array of adjectives",
+  Words: "Number of words",
+  // YourResponse: 'Write your Response'
+}
+let keys = Object.keys(myObj)
+let delimiter = '###'
+convertToObject(field, keys, delimiter)
+
+
+
+
+
+function checkKey(
+  field,
   outputFormat,
   newOutputFormat,
   delimiter,
-  delimiter_num = 1
-) {}
+  delimiterNum = 1
+) {
+  curDelimiter = delimiter * delimiterNum
+  // this is thje processed output Object 
+  outputD = {}
+  // check key appears for each element in the output
+  outputD = convertToObject(field, Object.keys(outputFormat), curDelimiter)
+
+}
 
 async function strictJson(
   systemPrompt,
