@@ -32,6 +32,14 @@ function wrapWithAngleBrackets(outputFormat, delimiter, delimiter_num) {
   return outputDict;
 }
 
+function check_key(
+  res,
+  outputFormat,
+  newOutputFormat,
+  delimiter,
+  delimiter_num = 1
+) {}
+
 async function strictJson(
   systemPrompt,
   userPrompt,
@@ -41,7 +49,6 @@ async function strictJson(
 ) {
   let errorMessage = "";
   let newOutputFormat = wrapWithAngleBrackets(outputFormat, delimiter, 1);
-  // console.log(newOutputFormat);
 
   // using JSON.stringify(newOutputFormat) instead just newOutputFormat as keeping the
   // later will output [object Object]
@@ -54,28 +61,40 @@ Ensure the following output keys are present in the json: ${Object.keys(
     newOutputFormat
   ).join(" ")}`;
 
-  systemPrompt = String(systemPrompt) + outputFormatPrompt + errorMessage;
-  userPrompt = String(userPrompt);
+  for (let i = 0; i < 3; i++) {
+    systemPrompt = String(systemPrompt) + outputFormatPrompt + errorMessage;
+    userPrompt = String(userPrompt);
 
-  let response = await llm(systemPrompt, userPrompt);
+    let response = await llm(systemPrompt, userPrompt);
 
-  // Get the Context present between the opening and closing brackets
-  // Add the { and } if the LLM does not generate them
-  let startIdx = response.indexOf("{");
-  if (startIdx === -1) {
-    startIdx = 0;
-    response = "{" + response;
+    // Get the Context present between the opening and closing brackets
+    // Add the { and } if the LLM does not generate them
+    let startIdx = response.indexOf("{");
+    if (startIdx === -1) {
+      startIdx = 0;
+      response = "{" + response;
+    }
+
+    let endIdx = response.lastIndexOf("}");
+    if (endIdx === -1) {
+      response = response + "}";
+      endIdx = response.length + 1;
+    }
+
+    response = response.substring(startIdx, endIdx + 1);
+
+    try {
+      return response;
+    } catch (err) {
+      errorMessage = `\n\nPrevious json: ${response}\njson error: ${String(
+        err
+      )}\nFix the error.`;
+      console.log("An exception occurred:", String(err));
+      console.log("Current invalid json format:", response);
+    }
+
+    return {};
   }
-
-  let endIdx = response.lastIndexOf("}");
-  if (endIdx === -1) {
-    response = response + "}";
-    endIdx = response.length + 1;
-  }
-
-  response = response.substring(startIdx, endIdx + 1);
-
-  return response;
 }
 
 // Export the strictJson function
