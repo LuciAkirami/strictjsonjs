@@ -59,17 +59,31 @@ let field =
 //   Words: "Number of words",
 //   // YourResponse: 'Write your Response'
 // }
+// let myObj = {
+//   Sentiment: "Type of Sentiment",
+//   Adjectives: "Array of adjectives",
+//   Words: "Number of words",
+//   trees: [{ min_tress: "Minimum Trees", max_trees: "Max Trees" }],
+// };
 let myObj = {
-  Sentiment: "Type of Sentiment",
-  Adjectives: "Array of adjectives",
-  Words: "Number of words",
-  trees: [{ min_tress: "Minimum Trees", max_trees: "Max Trees" }],
-};
+  "Sentiment": "Type of Sentiment",
+  "Adjectives": "Array of adjectives",
+  "Words": "Number of words",
+  "trees": [{"min_tress": "Minimum Trees", "max_trees": "Max Trees"}],
+  "another": {
+      "Sentiment": "Type of Sentiment",
+      "Adjectives": "Array of adjectives",
+      "Words": "Number of words",
+      "trees": [{"min_tress": "Minimum Trees", "max_trees": "Max Trees"}],
+  },
+}
 let keys = Object.keys(myObj);
 let delimiter = "###";
 
 let newOutputFormat = wrapWithAngleBrackets(myObj, delimiter, 1);
 console.log("Wrapped Angled Brackets", newOutputFormat);
+// null, 2 for pretty printing
+console.log(JSON.stringify(newOutputFormat, null, 2))
 
 function convertToObject(field, keys, delimiter) {
   let outputD = {};
