@@ -75,6 +75,7 @@ function convertToObject(
   }
 
   console.log(outputD)
+  return outputD
   
 }
 
@@ -92,10 +93,7 @@ let myObj = {
 }
 let keys = Object.keys(myObj)
 let delimiter = '###'
-convertToObject(field, keys, delimiter)
-
-
-
+// convertToObject(field, keys, delimiter)
 
 
 function checkKey(
@@ -105,13 +103,32 @@ function checkKey(
   delimiter,
   delimiterNum = 1
 ) {
-  curDelimiter = delimiter * delimiterNum
-  // this is thje processed output Object 
-  outputD = {}
-  // check key appears for each element in the output
-  outputD = convertToObject(field, Object.keys(outputFormat), curDelimiter)
+  // let curDelimiter = delimiter * delimiterNum // this gives undefined as we cannot multiply string with number in js
+  let curDelimiter = delimiter.repeat(delimiterNum)
 
+  if (typeof outputFormat === 'object' && outputFormat !== null) {
+    // this is the processed output Object 
+    let outputD = {}
+    // check key appears for each element in the output
+    console.log(Object.keys(outputFormat))
+    outputD = convertToObject(field, Object.keys(outputFormat), curDelimiter)
+
+    // Check if the elements in the objects belong to their types
+    const objectKeys = Object.keys(outputD)
+    console.log(objectKeys)
+
+    // Note that its "of" instead "in" for Object.entries
+    for(let [key, value] of Object.entries(outputD)) {
+      console.log(key, value)
+      // outputD[key] = checkKey(value, outputFormat[key])
+    }
+  }
+  
 }
+
+let newOutputFormat = wrapWithAngleBrackets(outputFormat, delimiter, 1)
+checkKey(field, myObj, '', delimiter, 1)
+
 
 async function strictJson(
   systemPrompt,
