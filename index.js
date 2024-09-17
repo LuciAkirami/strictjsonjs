@@ -19,7 +19,7 @@ function wrapWithAngleBrackets(outputFormat, delimiter, delimiter_num) {
     if (Array.isArray(outputFormat)) {
       // Process each item in the array, preserving the array structure
       return outputFormat.map((item) =>
-        wrapWithAngleBrackets(item, delimiter, delimiter_num)
+        wrapWithAngleBrackets(item, delimiter, delimiter_num+1)
       );
     } else {
       let outputDict = {};
