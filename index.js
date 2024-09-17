@@ -48,10 +48,26 @@ function convertToObject(
       // Cases with delimiter but with incomplete quotations
     }
 
+    
   }
   
-  // if everything is good, we extract out the fields
-  // Using RegEx to extract keys and values
+  // If the structure is Good, then extract the fields and keys using Regex
+  const pattern = new RegExp(`,*\\s*['|\\"]${delimiter}([^#]*)${delimiter}['|\\"]:\\s*`);
+  console.log(pattern);
+
+  const trimmedField = field.slice(1, -1).trim();
+  console.log(trimmedField)
+
+  const matches = trimmedField.split(pattern)
+  console.log(matches)
+
+  // Remove any extra ' or " in the matches
+  const cleanedMatches = matches.map(match => ['"', '"'].includes(match[0]) ? match.slice(1,-1) : match)
+  console.log(cleanedMatches)
+
+
+
+
   
 }
 
