@@ -61,13 +61,20 @@ function convertToObject(
   const matches = trimmedField.split(pattern)
   console.log(matches)
 
-  // Remove any extra ' or " in the matches
-  const cleanedMatches = matches.map(match => ['"', '"'].includes(match[0]) ? match.slice(1,-1) : match)
+  // Remove Null Matches
+  const notNullMatches = matches.filter(match => match !== '')
+  console.log(notNullMatches)
+
+  // Remove any extra ' or " in the value matches
+  const cleanedMatches = notNullMatches.map(match => ['"', '"'].includes(match[0]) ? match.slice(1,-1) : match)
   console.log(cleanedMatches)
 
+  // Create a JavaScript Object
+  for (let i=0; i < cleanedMatches.length; i+=2){
+    outputD[cleanedMatches[i]] = cleanedMatches[i+1]
+  }
 
-
-
+  console.log(outputD)
   
 }
 
