@@ -14,8 +14,21 @@ async function llm(system_prompt, user_prompt) {
 
 // Helper Functions
 
+function convertToList(field, chat=llm){
+  // Converts a string field into a lsit using LLM to list out element line by line
+  let systemMessage = "Output each element of the list in a new line starting with (%item) and ending with \n, e.g. ['hello', 'world'] -> (%item) hello\n(%item) world\nStart your response with (%item) and do not provide explanation"
+  let userMessage = String(field)
+  let response = chat(systemMessage, userMessage)
+
+  // Extract all the items into a list
+  let pattern = /\(%item\)\s*(.*?)\n*(?=\(%item\))/gs;
+  let list = [...response.matchAll(pattern)].map(match => match[1])
+  return list 
+}
+
 function wrapWithAngleBrackets(outputFormat, delimiter, delimiter_num) {
   if (typeof outputFormat === "object" && outputFormat !== null) {
+    // In js, Arrays are of type objects too
     if (Array.isArray(outputFormat)) {
       // Process each item in the array, preserving the array structure
       return outputFormat.map((item) =>
@@ -237,4 +250,4 @@ Ensure the following output keys are present in the json: ${Object.keys(
 }
 
 // Export the strictJson function
-export { strictJson };
+export { strictJson, convertToList };

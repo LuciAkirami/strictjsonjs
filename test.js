@@ -1,4 +1,4 @@
-import { strictJson } from "./index.js";
+import { strictJson, convertToList } from "./index.js";
 //  Calling using Async Await
 async function main() {
   try {
@@ -24,36 +24,43 @@ main();
 
 // Calling using Promises
 // Call the strictJson function and handle response using .then() and .catch()
-strictJson("You are a helpful Assistant", "It is a beautiful and sunny day", {
-  Sentiment: "Type of Sentiment",
-  Adjectives: "Array of adjectives",
-  Words: "Number of words",
-})
-  .then((response) => {
-    console.log("Response from strictJson:");
-    console.log(response);
-  })
-  .catch((error) => {
-    console.error("Error calling strictJson:", error);
-  });
+// strictJson("You are a helpful Assistant", "It is a beautiful and sunny day", {
+//   Sentiment: "Type of Sentiment",
+//   Adjectives: "Array of adjectives",
+//   Words: "Number of words",
+// })
+//   .then((response) => {
+//     console.log("Response from strictJson:");
+//     console.log(response);
+//   })
+//   .catch((error) => {
+//     console.error("Error calling strictJson:", error);
+//   });
 
 // Using Immediately Invoked Function Expression (IIFE)
 // Immediately Invoked Function Expression (IIFE)
-(async () => {
-  try {
-    const response = await strictJson(
-      "You are a helpful Assistant",
-      "It is a beautiful and sunny day",
-      {
-        Sentiment: "Type of Sentiment",
-        Adjectives: "Array of adjectives",
-        Words: "Number of words",
-      }
-    );
+// (async () => {
+//   try {
+//     const response = await strictJson(
+//       "You are a helpful Assistant",
+//       "It is a beautiful and sunny day",
+//       {
+//         Sentiment: "Type of Sentiment",
+//         Adjectives: "Array of adjectives",
+//         Words: "Number of words",
+//       }
+//     );
 
-    console.log("Response from strictJson:");
-    console.log(response);
-  } catch (error) {
-    console.error("Error calling strictJson:", error);
-  }
-})();
+//     console.log("Response from strictJson:");
+//     console.log(response);
+//   } catch (error) {
+//     console.error("Error calling strictJson:", error);
+//   }
+// })();
+
+
+let ans = convertToList(
+  "[one, two, second, tenth, 55]"
+)
+
+console.log(ans)
