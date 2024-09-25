@@ -14,6 +14,25 @@ async function llm(system_prompt, user_prompt) {
 
 // Helper Functions
 
+function processField(field) {
+  // 1. Decode double backslashes (handling \n, \t, etc.)
+  field = field.replace(/\\n/g, '\n')
+               .replace(/\\t/g, '\t')
+               .replace(/\\r/g, '\r')
+               .replace(/\\\\/g, '\\');  // Replace \\ with a single \
+
+  // 2. Replace the specific byte sequence 'â\x80\x99' with an apostrophe (')
+  field = field.replace(/â\x80\x99/g, "'");
+
+  // 3. Remove 'python', backticks(```), and leading whitespace
+  field = field.replace(/^\s*`*(python)?\s*/i, "");  // case-insensitive for 'python'
+
+  // 4. Remove trailing whitespace and backticks from end
+  field = field.replace(/(\s|`)*$/g, "");
+
+  return field;
+}
+
 function convertToList(field, chat=llm){
   // Converts a string field into a lsit using LLM to list out element line by line
   let systemMessage = "Output each element of the list in a new line starting with (%item) and ending with \n, e.g. ['hello', 'world'] -> (%item) hello\n(%item) world\nStart your response with (%item) and do not provide explanation"
@@ -24,6 +43,101 @@ function convertToList(field, chat=llm){
   let pattern = /\(%item\)\s*(.*?)\n*(?=\(%item\))/gs;
   let list = [...response.matchAll(pattern)].map(match => match[1])
   return list 
+}
+
+function typeCheckAndConvert(field, key, data_type){
+  if (data_type.toLowerCase() === 'str'){
+    try {
+      // converting to string
+      field = String(field)
+    } catch (error) {
+      // 
+    }
+
+    if (typeof field !== 'string') {
+      throw new Error(`Output field of "${key}" not of data type ${data_type}. If not possible to match, output ''`)
+    }
+  }
+
+  // code is a special case of string, where we remove double backslashes
+  if (data_type.toLowerCase() === 'code') {
+    try {
+      // converting to string
+      field = String(field)
+    } catch (error) {
+      // 
+    }
+
+    if (typeof field !== 'string') {
+      throw new Error(`Output field of "${key}" not of data type ${data_type}. If not possible to match, output ''`)
+    }
+
+    // perform different operations
+    field = processField(field)
+  }
+
+  // checking for intiger
+  if (data_type.toLowerCase() === 'int') {
+    try {
+      // converting to int
+      field = parseInt(field)
+    } catch (error) {
+      // 
+    }
+
+    if (Number.isInteger(field)) {
+      throw new Error(`Output field of "${key}" not of data type ${data_type}. If not possible to match, output 0`)
+    }
+  }
+
+  // checking for float
+  if (data_type.toLowerCase() === 'float') {
+    try {
+      // converting to float
+      field = parseFloat(field)
+    } catch (error) {
+      // 
+    }
+
+    //  isFinite() checks if given data is a number or not
+    // and Number.isInteger() checks if its a Integer or not
+    // so if the data is a number but not an Integer, then its a float
+    if (!Number.isInteger(field) && Number.isFinite(field)) {
+      throw new Error(`Output field of "${key}" not of data type ${data_type}. If not possible to match, output 0.0`)
+    }
+  }
+
+  // checking for bool
+  if (data_type.toLowerCase() === 'bool') {
+    // first convert tot string
+    field = String(field)
+
+    // then convert to bool
+    if ('true' === field.substring(0,4).toLowerCase()){
+      field = true
+    } else if ('false' === field.substring(0,5).toLowerCase()) {
+      field = false
+    }
+
+    else {
+      throw new Error(`Output field of "${key}" not of data type ${data_type}. If not possible to match, output True`)
+    }
+  }
+
+  // checking for enum
+  if (data_type.toLowerCase() === 'enum') {
+    try {
+      // converting the enum list to an Array
+      // Eg: String: "Enum['Positive','Negative']" -> Array: ['Positive','Negative']
+      values = JSON.parse(data_type.substring(4).replace(/'/g,'"')) // replace ' with "
+    } catch (error) {
+      // 
+    }
+
+    if (!values.includes(field)) {
+      throw new Error(`Output field of "${key}" (${field}) not one of {values}. If not possible to match, output ${values[0]}`)
+    }
+  }
 }
 
 function wrapWithAngleBrackets(outputFormat, delimiter, delimiter_num) {
